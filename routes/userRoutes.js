@@ -32,15 +32,18 @@ router.put('/change-password', authenticateToken, async (req, res) => {
 router.delete('/delete', authenticateToken, async (req, res) => {
   try {
     await userHandler.deleteUser(req.user.email);
-    res.status(200).json({ message: 'User deleted' });
+    res.status(200).json({ message: 'User deleted successfully' });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
+
 });
 
 // Hemmelig rute
 router.get('/secret', authenticateToken, authorizeUser, (req, res) => {
-  res.status(200).json({ secret: 'Her er den hemmelige siden!' });
+  res.status(200).json({ image: '../client/public/secret.webp' });
+  console.log("SHOW IMAGE")
 });
+
 
 module.exports = router;
