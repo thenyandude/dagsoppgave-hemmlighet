@@ -1,37 +1,27 @@
 require('dotenv').config();
 const express = require('express');
-const mongoose = require('mongoose');
-const TestData = require('./models/TestData'); // Importer din modell
+const connectDatabase = require('./handlers/databaseHandler');
+const runTests = require('./tests/user-crud-testing'); // Import the test function
 const app = express();
 
-const DBUri = process.env.DB_URI;
-
-mongoose.connect(DBUri, { useNewUrlParser: true, useUnifiedTopology: true })
+// Establish the database connection
+connectDatabase()
   .then(() => {
-    console.log('MongoDB Connected');
-    initializeTestData();
-  })
-  .catch(err => console.log('MongoDB Connection Error:', err));
+    console.log('Database connected. Running tests...');
 
-app.get('/', (req, res) => {
-  res.send('Hello World!');
-});
+    // Run the tests after successful database connection
+    runTests().then(() => {
+      console.log('Tests completed');
+    }).catch(err => {
+      console.error('Tests failed:', err);
+    });
+  })
+  .catch(err => console.error('Database connection failed:', err));
+
+  app.get('/', (req, res) => {
+    res.send('Hello World!');
+  });
 
 app.listen(3000, () => {
   console.log('Server running on port 3000');
 });
-
-async function initializeTestData() {
-    try {
-      const doc = await TestData.findOne({ tittel: 'test' });
-      if (!doc) {
-        const newTestData = new TestData({ tittel: 'test', data: ['1', '10', '11', '100', '101'] });
-        await newTestData.save();
-        console.log('Test data initialized');
-      } else {
-        console.log('Test data already exists');
-      }
-    } catch (err) {
-      console.log(err);
-    }
-  }
