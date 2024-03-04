@@ -3,6 +3,11 @@ const express = require('express');
 const connectDatabase = require('./handlers/databaseHandler');
 const runTests = require('./tests/user-crud-testing'); // Import the test function
 const app = express();
+const userRoutes = require('./routes/userRoutes');
+
+app.use(express.json()); // For å parse JSON request-bodies
+
+app.use('/user', userRoutes);
 
 // Establish the database connection
 connectDatabase()
